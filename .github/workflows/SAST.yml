@@ -1,7 +1,7 @@
 name: Verademo Maven Build
 
 on:
-#  push:
+  push:
 #    branches: [ main ]
 #  pull_request:
 #    branches: [ main ]
