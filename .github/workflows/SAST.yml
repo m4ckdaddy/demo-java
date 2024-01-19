@@ -64,7 +64,7 @@ jobs:
         uses: veracode/veracode-uploadandscan-action@0.2.4
         with:
           # appname
-          appname: VeraGithub-Demo
+          appname: VeraGithub-Demo-java
           # createprofile
           createprofile: true # default is true
           # filepath
