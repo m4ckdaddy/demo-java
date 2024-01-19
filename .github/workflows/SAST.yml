@@ -1,0 +1,111 @@
+name: Verademo Maven Build
+
+on:
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+    workflow_dispatch: 
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # grants permissions for the artifact to be uploaded
+    permissions:
+      contents: read
+      packages: write
+    
+    
+    steps:
+    
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          
+      - name: Build with Maven
+        run: |
+          cd app/
+          mvn -B clean package --file pom.xml
+          ls target/
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+            # Artifact name
+            name: verademo-artifact
+            # optional, default is artifact
+            # A file, directory or wildcard pattern that describes what to upload
+            path: app/target/verademo.war
+            # The desired behavior if no files are found using the provided path.
+            if-no-files-found: error
+  
+        
+  veracode-sast-analysis:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2.0.10
+        with: 
+          name: verademo-artifact
+          path: analysis/
+      - run: pwd
+      - run: ls -la analysis/
+      
+      - name: Veracode Upload And Scan
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
+        uses: veracode/veracode-uploadandscan-action@0.2.4
+        with:
+          # appname
+          appname: VeraGithub-Demo
+          # createprofile
+          createprofile: true # default is true
+          # filepath
+          filepath: ./app/target/verademo.war
+          # version
+          version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+          # vid
+          vid: ${{secrets.VERACODE_API_ID}}
+          # vkey
+          vkey: ${{secrets.VERACODE_API_KEY}}
+          # true or false
+          #createsandbox: false # optional
+          # name of the sandbox
+          #sandboxname: # optional
+          # wait X minutes for the scan to complete
+          #scantimeout: # optional
+          # modules to exclude from module selection
+          #exclude: # optional
+          # modules to include in module selection
+          #include: # optional
+          # business criticality - policy selection
+          #criticality: # optional
+          # filename pattern
+          #pattern: # optional
+          # replacement
+          #replacement: # optional
+          # specify to scan in a sandbox
+          #sandboxid: # optional
+          # All top level modules
+          #scanallnonfataltoplevelmodules: # optional
+          # platform selected modules
+          #selected: # optional
+          # selected modules like from previous scan
+          #selectedpreviously: # optional
+          # teams
+          #teams: # optional
+          # teams
+          #toplevel: # optional
+          # automatically delete the current scan if there are any errors when uploading files or starting the scan
+          deleteincompletescan: true # optional
+          # specify version of the Java API Wrapper; default is latest
+          #javawrapperversion: # optional
+          # show detailed diagnostic information, which you can use for debugging, in the output.
+        #  debug: 1 # optional
