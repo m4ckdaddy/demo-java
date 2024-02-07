@@ -6,7 +6,7 @@ on:
 
 jobs: 
   SCA: 
-    name: Software Composition Analysis
+    name: Software Composition Analysis 
     runs-on: ubuntu-latest
     env: 
         SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
@@ -17,4 +17,4 @@ jobs:
           
         - name: Veracode Dependency Scanning
           run: |
-              curl -sSL https://download.sourceclear.com/ci.sh | bash -s scan  --update-advisor
+              curl -sSL https://download.sourceclear.com/ci.sh | bash -s scan  --update-advisor --ws=${{ secrets.SRCCLR_WORKSPACE_SLUG }}
