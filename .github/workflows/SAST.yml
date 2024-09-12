@@ -41,7 +41,7 @@ jobs:
             name: verademo-artifact
             # optional, default is artifact
             # A file, directory or wildcard pattern that describes what to upload
-            path: target/verademo.war
+            path: app/target/verademo.war
             # The desired behavior if no files are found using the provided path.
             if-no-files-found: error
   
@@ -68,7 +68,7 @@ jobs:
           # createprofile
           createprofile: true # default is true
           # filepath
-          filepath: ./app/target/verademo.war
+          filepath: target/verademo.war
           # version
           version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
           # vid
